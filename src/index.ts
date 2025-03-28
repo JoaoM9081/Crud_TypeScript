@@ -4,16 +4,19 @@ import { Categoria } from './model/Categoria';
 import { Produto } from './model/Produto';
 import { CategoriaService } from './service/CategoriaService';
 import { ProdutoService } from './service/ProdutoService';
-import { promptMenu } from './interface';
+import { promptMenu } from './interface/cli';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: 'localhost',
-  port: 5432,
-  username: 'postgres',
-  password: 'admin',
-  database: 'inventory',
-  synchronize: true,   // Certifique-se de que isso está habilitado
+  host: process.env.DB_HOST,  
+  port: parseInt(process.env.DB_PORT || '5432'),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  synchronize: true,  
   logging: false,
   entities: [Categoria, Produto],
   migrations: [],

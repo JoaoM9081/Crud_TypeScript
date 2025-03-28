@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Produto } from './Produto';  // Certifique-se de importar a entidade Produto
 
 @Entity()
 export class Categoria {
@@ -13,5 +14,7 @@ export class Categoria {
 
   @Column()
   dataCriacao!: Date;
-}
 
+  @OneToMany(() => Produto, (produto) => produto.categoria)
+  produtos!: Produto[];  
+}

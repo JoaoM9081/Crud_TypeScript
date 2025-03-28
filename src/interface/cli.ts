@@ -1,8 +1,8 @@
 import inquirer from 'inquirer';
-import { CategoriaService } from './service/CategoriaService';
-import { ProdutoService } from './service/ProdutoService';
-import { menuCategorias } from './controller/CategoriaController';
-import { menuProdutos } from './controller/ProdutoController';
+import { CategoriaService } from '../service/CategoriaService';
+import { ProdutoService } from '../service/ProdutoService';
+import { menuCategorias } from '../controller/CategoriaController';
+import { menuProdutos } from '../controller/ProdutoController';
 
 export async function promptMenu(categoriaService: CategoriaService, produtoService: ProdutoService) {
   let continuar = true;

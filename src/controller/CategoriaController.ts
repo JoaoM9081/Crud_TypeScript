@@ -43,7 +43,6 @@ async function criarCategoria(categoriaService: CategoriaService) {
       { type: 'input', name: 'descricao', message: 'Descrição da categoria:' },
     ]);
     try {
-      // Usando await para garantir que a criação da categoria seja concluída antes de prosseguir
       const categoria = await categoriaService.criar(dados.nome, dados.descricao);
       console.log('Categoria criada com sucesso:', categoria);
     } catch (error: unknown) {
@@ -56,7 +55,7 @@ async function criarCategoria(categoriaService: CategoriaService) {
   }
 
   async function listarCategorias(categoriaService: CategoriaService) {
-    const categorias = await categoriaService.listar();  // Adicionando `await` para aguardar os dados
+    const categorias = await categoriaService.listar();  
     if (categorias.length === 0) {
       console.log('Nenhuma categoria encontrada.');
     } else {
@@ -72,31 +71,36 @@ async function criarCategoria(categoriaService: CategoriaService) {
     console.table(categorias);
   }
   
-async function atualizarCategoria(categoriaService: CategoriaService) {
-  const dados = await inquirer.prompt([
-    { type: 'input', name: 'id', message: 'ID da categoria a atualizar:' },
-    { type: 'input', name: 'nome', message: 'Novo nome:' },
-    { type: 'input', name: 'descricao', message: 'Nova descrição:' },
-  ]);
-  try {
-    const categoria = await categoriaService.atualizar(Number(dados.id), dados.nome, dados.descricao);
-    console.log('Categoria atualizada com sucesso:', categoria);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error('Erro ao atualizar categoria:', error.message);
-    } else {
-      console.error('Erro desconhecido ao atualizar categoria');
+  async function atualizarCategoria(categoriaService: CategoriaService) {
+    const dados = await inquirer.prompt([
+      { type: 'input', name: 'nomeCategoria', message: 'Nome da categoria a atualizar:' }, 
+      { type: 'input', name: 'nome', message: 'Novo nome:' },
+      { type: 'input', name: 'descricao', message: 'Nova descrição:' },
+    ]);
+  
+    try {
+      const categoria = await categoriaService.atualizar(
+        dados.nomeCategoria,  
+        dados.nome,
+        dados.descricao
+      );
+      console.log('Categoria atualizada com sucesso:', categoria);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Erro ao atualizar categoria:', error.message);
+      } else {
+        console.error('Erro desconhecido ao atualizar categoria');
+      }
     }
   }
-}
 
-async function removerCategoria(categoriaService: CategoriaService) {
-    const { id } = await inquirer.prompt([
-      { type: 'input', name: 'id', message: 'ID da categoria a remover:' },
+  async function removerCategoria(categoriaService: CategoriaService) {
+    const { nomeCategoria } = await inquirer.prompt([
+      { type: 'input', name: 'nomeCategoria', message: 'Nome da categoria a remover:' },  
     ]);
+  
     try {
-      // Agora aguardamos o resultado da Promise retornada por categoriaService.remover
-      const sucesso = await categoriaService.remover(Number(id));
+      const sucesso = await categoriaService.remover(nomeCategoria);  
       if (sucesso) {
         console.log('Categoria removida com sucesso!');
       }
@@ -108,4 +112,3 @@ async function removerCategoria(categoriaService: CategoriaService) {
       }
     }
   }
-  

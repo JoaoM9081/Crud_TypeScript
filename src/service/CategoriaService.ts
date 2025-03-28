@@ -1,6 +1,5 @@
 import { Categoria } from '../model/Categoria';
 import { AppDataSource } from '../index';
-import { Like } from 'typeorm'; // Importando o Like
 
 export class CategoriaService {
   private categoriaRepository = AppDataSource.getRepository(Categoria);
@@ -18,7 +17,6 @@ export class CategoriaService {
     categoria.descricao = descricao;
     categoria.dataCriacao = new Date();
 
-    // Persiste a categoria no banco de dados
     await this.categoriaRepository.save(categoria);
     return categoria;
   }
@@ -27,38 +25,38 @@ export class CategoriaService {
     return this.categoriaRepository.find();
   }
 
-  async buscar(id: number): Promise<Categoria | null> {
-    return this.categoriaRepository.findOneBy({ id });
-  }
-
   async buscarPorNome(nome: string): Promise<Categoria[]> {
     return this.categoriaRepository
       .createQueryBuilder('categoria')
-      .where('LOWER(categoria.nome) LIKE LOWER(:nome)', { nome: `%${nome}%` })  // Usando LOWER para comparar de forma insensível ao caso
+      .where('LOWER(categoria.nome) LIKE LOWER(:nome)', { nome: `%${nome}%` }) 
       .getMany();
   }
   
-  async atualizar(id: number, nome: string, descricao: string): Promise<Categoria | null> {
-    const categoria = await this.buscar(id);
-    if (!categoria) {
+  async atualizar(nomeCategoria: string, nome: string, descricao: string): Promise<Categoria | null> {
+    const categoria = await this.buscarPorNome(nomeCategoria);  
+    if (!categoria || categoria.length === 0) {
       throw new Error('Categoria não encontrada');
     }
-    categoria.nome = nome;
-    categoria.descricao = descricao;
-    categoria.dataCriacao = new Date();
-
-    await this.categoriaRepository.save(categoria);
-    return categoria;
+  
+    const categoriaEncontrada = categoria[0];  
+  
+    categoriaEncontrada.nome = nome;
+    categoriaEncontrada.descricao = descricao;
+    categoriaEncontrada.dataCriacao = new Date();
+  
+    await this.categoriaRepository.save(categoriaEncontrada);
+    return categoriaEncontrada;
   }
-
-  async remover(id: number): Promise<boolean> {
-    const categoria = await this.buscar(id);
-    if (!categoria) {
+  
+  async remover(nomeCategoria: string): Promise<boolean> {
+    const categoria = await this.buscarPorNome(nomeCategoria);  
+    if (!categoria || categoria.length === 0) {
       throw new Error('Categoria não encontrada');
     }
-
-    // Remover categoria
-    await this.categoriaRepository.remove(categoria);
+  
+    const categoriaEncontrada = categoria[0];  
+  
+    await this.categoriaRepository.remove(categoriaEncontrada);
     return true;
   }
 }

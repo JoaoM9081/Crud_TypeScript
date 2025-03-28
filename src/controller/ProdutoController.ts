@@ -43,7 +43,7 @@ async function criarProduto(produtoService: ProdutoService) {
     { type: 'input', name: 'descricao', message: 'Descrição do produto:' },
     { type: 'input', name: 'preco', message: 'Preço do produto:' },
     { type: 'input', name: 'quantidade', message: 'Quantidade do produto:' },
-    { type: 'input', name: 'categoriaId', message: 'ID da categoria:' },
+    { type: 'input', name: 'categoriaNome', message: 'Nome da categoria:' }, 
   ]);
   try {
     const produto = await produtoService.criar(
@@ -51,7 +51,7 @@ async function criarProduto(produtoService: ProdutoService) {
       dados.descricao,
       parseFloat(dados.preco),
       parseInt(dados.quantidade),
-      parseInt(dados.categoriaId)
+      dados.categoriaNome // Passando o nome da categoria
     );
     console.log('Produto criado com sucesso:', produto);
   } catch (error: unknown) {
@@ -64,39 +64,46 @@ async function criarProduto(produtoService: ProdutoService) {
 }
 
 async function listarProdutos(produtoService: ProdutoService) {
-    const produtos = await produtoService.listar(); // Adicionando `await` para esperar os dados
-    if (produtos.length === 0) {
-      console.log('Nenhum produto encontrado.');
-
-        
-    }else {
-      console.table(produtos); // Exibindo os produtos em formato de tabela
-    }
+  const produtos = await produtoService.listar();  
+  if (produtos.length === 0) {
+    console.log('Nenhum produto encontrado.');
+  } else {
+    console.table(produtos.map(produto => ({
+      ...produto,
+      categoria: produto.categoria ? produto.categoria.nome : 'Categoria não associada'
+    })));
   }
+}
   
 async function buscarProduto(produtoService: ProdutoService) {
   const { nome } = await inquirer.prompt([
     { type: 'input', name: 'nome', message: 'Nome do produto a buscar:' },
   ]);
   const produtos = await produtoService.buscarPorNome(nome);
-  console.table(produtos);
+  console.table(produtos.map(produto => ({
+    ...produto,
+    categoria: produto.categoria ? produto.categoria.nome : 'Categoria não associada'
+  })));
 }
 
 async function atualizarProduto(produtoService: ProdutoService) {
   const dados = await inquirer.prompt([
-    { type: 'input', name: 'id', message: 'ID do produto a atualizar:' },
+    { type: 'input', name: 'nomeProduto', message: 'Nome do produto a atualizar:' },  
     { type: 'input', name: 'nome', message: 'Novo nome:' },
     { type: 'input', name: 'descricao', message: 'Nova descrição:' },
     { type: 'input', name: 'preco', message: 'Novo preço:' },
     { type: 'input', name: 'quantidade', message: 'Nova quantidade:' },
+    { type: 'input', name: 'categoriaNome', message: 'Nome da nova categoria (opcional):' },
   ]);
+
   try {
     const produto = await produtoService.atualizar(
-      Number(dados.id),
+      dados.nomeProduto,  
       dados.nome,
       dados.descricao,
       parseFloat(dados.preco),
-      parseInt(dados.quantidade)
+      parseInt(dados.quantidade),
+      dados.categoriaNome ? dados.categoriaNome : null  
     );
     console.log('Produto atualizado com sucesso:', produto);
   } catch (error: unknown) {
@@ -109,21 +116,21 @@ async function atualizarProduto(produtoService: ProdutoService) {
 }
 
 async function removerProduto(produtoService: ProdutoService) {
-    const { id } = await inquirer.prompt([
-      { type: 'input', name: 'id', message: 'ID do produto a remover:' },
-    ]);
-    try {
-      // Adicionando o `await` para aguardar a Promise
-      const sucesso = await produtoService.remover(Number(id));
-      if (sucesso) {
-        console.log('Produto removido com sucesso!');
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('Erro ao remover produto:', error.message);
-      } else {
-        console.error('Erro desconhecido ao remover produto');
-      }
+  const { nomeProduto } = await inquirer.prompt([
+    { type: 'input', name: 'nomeProduto', message: 'Nome do produto a remover:' },  
+  ]);
+
+  try {
+    
+    const sucesso = await produtoService.remover(nomeProduto);  
+    if (sucesso) {
+      console.log('Produto removido com sucesso!');
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Erro ao remover produto:', error.message);
+    } else {
+      console.error('Erro desconhecido ao remover produto');
     }
   }
-  
+}

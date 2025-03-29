@@ -21,13 +21,63 @@ npm start
 
 ### Pontos Técnicos
 - **TypeScript** com tipagem adequada (`string`, `number`, `Date`, etc.)
-- **Interfaces** (`interface Produto`) para contratos entre módulos
-- **Funções tipadas** com parâmetros e retornos explícitos
-- **Classes** com modificadores (`private`, `public`)
-- **Validações de entrada** e tratamento de erros com `try/catch`
-- **Union types**: `string | null`
-- **Generics** (em funções auxiliares, ex: `function imprimir<T>()`)
-- **Enum e Tipos condicionais** (quando aplicável)
+- **Interfaces** reais usadas:
+```ts
+export interface Produto {
+  id: number;
+  nome: string;
+  descricao: string;
+  preco: number;
+  quantidade: number;
+  categoria: Categoria;
+  dataCriacao: Date;
+  dataAtualizacao: Date;
+}
+```
+- **Funções tipadas reais** com validação:
+```ts
+criar(nome: string, descricao: string): Categoria {
+  if (!nome.trim() || !descricao.trim()) throw new Error('Nome e descrição são obrigatórios');
+  const novaCategoria = { ... };
+  return novaCategoria;
+}
+```
+- **Classes reais com encapsulamento e injeção de dependência**:
+```ts
+export class ProdutoService {
+  private produtos: Produto[] = [];
+  private proximoId = 1;
+  private categoriaService: CategoriaService;
+
+  constructor(categoriaService: CategoriaService) {
+    this.categoriaService = categoriaService;
+  }
+}
+```
+- **Union types usados no código**:
+```ts
+categoriaNome?: string
+```
+- **Validações e tratamento de erros**:
+```ts
+if (!categoria || categoria.length === 0) {
+  throw new Error('Categoria não encontrada');
+}
+```
+
+- **Exemplo descontextualizado de função com tipo e retorno**:
+```ts
+function somar(a: number, b: number): number {
+  return a + b;
+}
+```
+
+- **Exemplo descontextualizado com parâmetros opcionais**:
+```ts
+function saudacao(nome: string, saudacao?: string): string {
+  return `${saudacao ?? 'Olá'}, ${nome}`;
+}
+```
 
 ### tsconfig.json
 ```json
@@ -66,17 +116,36 @@ DB_DATABASE=seu_banco
 ```
 
 ### Pontos Técnicos
-- **Entidades com Decorators** (`@Entity`, `@Column`, `@ManyToOne`, etc.)
-- **Repositórios do TypeORM** com `AppDataSource.getRepository()`
-- **Relacionamentos entre entidades** (1:N, N:1)
-- **async/await** com `Promise<T>` em todos os métodos
-- **Dotenv** para segurança de variáveis de conexão
-- **Modularização e reutilização** de serviços e controllers
-- **Validação e tratamento de exceções**
+- **Entidades reais com Decorators**:
+```ts
+@Entity()
+export class Produto {
+  @PrimaryGeneratedColumn()
+  id!: number;
+
+  @Column()
+  nome!: string;
+
+  @ManyToOne(() => Categoria, categoria => categoria.produtos)
+  categoria!: Categoria;
+}
+```
+- **Repositórios do TypeORM**:
+```ts
+private produtoRepository = AppDataSource.getRepository(Produto);
+```
+- **async/await com Promise**:
+```ts
+async listar(): Promise<Produto[]> {
+  return this.produtoRepository.find({ relations: ['categoria'] });
+}
+```
+- **Dotenv** usado para carregar variáveis de ambiente do banco
+- **Tratamento de exceções** com `try/catch`
 
 ### Observações
 - `synchronize: true` recria tabelas automaticamente a cada inicialização.
-- O TypeORM abstrai as queries SQL, mantendo foco em objetos.
+- O TypeORM abstrai SQL mantendo foco em objetos.
 
 ---
 
@@ -88,43 +157,84 @@ DB_DATABASE=seu_banco
 - Union e Intersection Types: `string | null`, `Produto & Categoria`
 
 ### Interfaces e Tipos Personalizados
+Reais do projeto:
 ```ts
-interface Produto {
+export interface Categoria {
   id: number;
   nome: string;
-  categoria?: Categoria; // opcional
+  descricao: string;
+  dataCriacao: Date;
 }
+```
+
+Exemplo descontextualizado:
+```ts
+type Resultado = { sucesso: boolean; mensagem?: string };
 ```
 
 ### Funções em TypeScript
+Reais do projeto:
 ```ts
-function atualizar(nome: string, preco?: number): Produto {
-  // corpo
+atualizar(nomeCategoria: string, nome: string, descricao: string): Categoria {
+  const categoria = this.buscarPorNome(nomeCategoria)[0];
+  categoria.nome = nome;
+  return categoria;
 }
 ```
 
-### Classes, Herança e Acesso
+Descontextualizada:
 ```ts
-class BaseService {
-  protected log(): void {}
+function calcularDesconto(valor: number, percentual: number = 10): number {
+  return valor - (valor * percentual) / 100;
+}
+```
+
+### Classes, Herança e Modificadores de Acesso
+Usado no projeto:
+```ts
+export class CategoriaService {
+  private categorias: Categoria[] = [];
+}
+```
+
+Descontextualizado:
+```ts
+class Animal {
+  protected emitirSom(): void {}
 }
 
-class ProdutoService extends BaseService {
-  private produtos: Produto[] = [];
+class Cachorro extends Animal {
+  emitirSom(): void {
+    console.log("Latido");
+  }
 }
 ```
 
 ### Generics
+**Observação:** embora não usados no projeto, podem ser úteis em funções auxiliares.
+
+Exemplo descontextualizado:
 ```ts
-function buscarPorId<T>(lista: T[], id: number): T | undefined {
-  return lista.find(item => item['id'] === id);
+function exibirLista<T>(itens: T[]): void {
+  itens.forEach(item => console.log(item));
 }
 ```
 
 ### Enum e Mapeamento de Valores
+**Não usado no projeto, mas aplicável.**
+
+Exemplo descontextualizado:
 ```ts
 enum Status {
   Ativo = 'ativo',
   Inativo = 'inativo'
+}
+```
+
+Exemplo possível no sistema:
+```ts
+enum TipoCategoria {
+  Comum = 'comum',
+  Premium = 'premium'
 }
 ```

@@ -3,9 +3,9 @@
 Sistema de gerenciamento de inventário com **persistência em memória** usando TypeScript.
 
 ## Integrantes
-- João Marcos Azevedo Cruz
-- João Pedro Tavares
-- João Victor Martins
+- João Marcos Azevedo Cruz (UC23100741)
+- João Pedro Tavares (UC23100608)
+- João Victor Martins ()
 
 ### Como executar
 ```bash

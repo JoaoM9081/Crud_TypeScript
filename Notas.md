@@ -4,8 +4,8 @@ Sistema de gerenciamento de inventário com **persistência em memória** usando
 
 ## Integrantes
 - João Marcos Azevedo Cruz (UC23100741)
-- João Pedro Tavares (UC23100608)
-- João Victor Martins ()
+- João Pedro Tavares Teixeira (UC23100608)
+- João Victor Martins Albernaz (UC23111040)
 
 ### Como executar
 ```bash

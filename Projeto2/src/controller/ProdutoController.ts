@@ -51,7 +51,7 @@ async function criarProduto(produtoService: ProdutoService) {
       dados.descricao,
       parseFloat(dados.preco),
       parseInt(dados.quantidade),
-      dados.categoriaNome // Passando o nome da categoria
+      dados.categoriaNome 
     );
     console.log('Produto criado com sucesso:', produto);
   } catch (error: unknown) {

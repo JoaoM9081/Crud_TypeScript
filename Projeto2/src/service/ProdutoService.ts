@@ -24,7 +24,6 @@ export class ProdutoService {
       throw new Error('Descrição do produto não pode estar vazia');
     }
   
-    // Buscar a categoria pelo nome
     const categoria = await this.categoriaService.buscarPorNome(categoriaNome);
     if (!categoria || categoria.length === 0) {
       throw new Error('Categoria não encontrada');
@@ -63,7 +62,6 @@ export class ProdutoService {
     quantidade: number,
     categoriaNome: string | null = null  
   ): Promise<Produto | undefined> {
-    // Busca o produto pelo nome
     const produto = await this.buscarPorNome(nomeProduto); 
     if (!produto || produto.length === 0) {
       throw new Error('Produto não encontrado');
